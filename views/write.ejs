@@ -1,0 +1,20 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/main.css">
+    <title>글 작성 페이지</title>
+</head>
+<body class="grey-bg">
+
+    <%- include ('nav.ejs') %>
+
+    <form action="/add" method="POST" class="form-box"> 
+        <!--전송 버튼을 누르면 post의 형태로 /add에 데이터가 전송됨-->
+        <h4>글 작성</h4>
+        <input id="writetitle" name="title" placeholder="제목을 입력하세요.">
+        <input id="writecontent" name="content" placeholder="내용을 입력하세요.">
+        <button type="submit">게시하기</button>
+    </form> 
+</body>
+</html>

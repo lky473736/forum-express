@@ -39,6 +39,7 @@ app.get('/', (요청, 응답) => {
   응답.redirect('/list');
 });
 
+
 // /list 페이지 : 글 목록을 보여준다.
 app.get('/list', async (요청, 응답) => {
   let postlist = await db.collection('post').find().toArray();
@@ -48,3 +49,28 @@ app.get('/list', async (요청, 응답) => {
 });
 
 
+// /write 페이지 : 글 작성
+app.get('/write', async(요청, 응답) => {
+  응답.render('write.ejs');
+});
+
+app.post('/add', async(요청, 응답) => {
+  console.log(요청.body)
+
+  if (요청.body.title == '' || 요청.body.content == '') {
+    응답.send("<script>alert('제목이나 내용이 없습니다. 다시 작성해주십시오.'); window.location.replace('/write');</script>");
+  }
+
+  else {
+    try {
+      await db.collection('post').insertOne({
+        title : 요청.body.title, // 제목 넣기
+        content : 요청.body.content // 내용 넣기
+      });
+      응답.redirect ('/list');
+    } catch (err) {
+      console.log(err);
+      return 응답.status(500).send('server error occurred');
+    }
+  }
+});
