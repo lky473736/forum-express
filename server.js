@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+// template engine인 ejs 세팅
+app.set('view engine', 'ejs');
+
 // server랑 db의 통신 세팅
 const { MongoClient } = require('mongodb');
 
