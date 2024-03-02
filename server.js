@@ -39,5 +39,12 @@ app.get('/', (요청, 응답) => {
   응답.redirect('/list');
 });
 
+// /list 페이지 : 글 목록을 보여준다.
+app.get('/list', async (요청, 응답) => {
+  let postlist = await db.collection('post').find().toArray();
+  console.log(postlist);
+
+  응답.render('list.ejs', {글목록 : postlist});
+});
 
 
