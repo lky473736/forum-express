@@ -75,6 +75,8 @@ app.post('/add', async(요청, 응답) => {
   }
 });
 
+
+// /detail 페이지 : 제목과 글, 삭제와 수정 기능 
 app.get('/detail', async(요청, 응답) => {
   try {
     let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
@@ -93,9 +95,26 @@ app.get('/detail', async(요청, 응답) => {
   }
 });
 
+
+// /edit : 글 수정 페이지 
 app.get('/edit', async(요청, 응답) => {
-    let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
-    console.log(요청.query.id); 
-    
-    응답.render('edit.ejs', {글 : posting});
+  let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
+  console.log(요청.query.id); 
+  
+  응답.render('edit.ejs', {글 : posting});
+});
+
+app.put('/edit', async(요청, 응답) => {
+  console.log (요청.body);
+  try {
+    if (요청.body.title == '' || 요청.body.content == '') {
+      응답.send("<script>alert('제목이나 내용이 존재하지 않습니다.');</script>");
+    } 
+    else {
+      await db.collection('post').updateOne({_id : new ObjectId(요청.body.id) }, {$set : {title : 요청.body.title, content : 요청.body.content}});
+      응답.redirect('/list');
+    }
+  } catch (err) {
+    응답.status(500).send('server error occurred');
+  }
 });

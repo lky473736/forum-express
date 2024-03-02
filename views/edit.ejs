@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/main.css">
+    <title>글 수정 페이지</title>
+</head>
+<body class="grey-bg">
+    <%- include ('nav.ejs') %>
+
+    <!--메소드 오버라이딩을 통해 post요청을 put으로 바꿈-->
+    <form action="/edit?_method=PUT" method="POST" class="form-box"> 
+        <h4>글 수정</h4>
+
+        <!--유저가 id 보내주기-->
+        <input id="id" name="id" value="<%= 글._id %>" style="display:none">
+        
+        <input id="writetitle" name="title" value="<%= 글.title %>">
+        <input id="writecontent" name="content" value="<%= 글.content %>">
+        <input type="hidden" name="_method" value="PUT"/>
+        <button type="submit">수정하기</button>
+    </form> 
+</body>
+</html>
