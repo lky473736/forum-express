@@ -32,3 +32,12 @@ app.use(express.urlencoded({extended:true}));
 
 // ObjectId를 사용하기 위한 세팅
 const ObjectId = require('mongodb').ObjectId;
+
+// 아래는 라우팅 구현
+
+app.get('/', (요청, 응답) => {
+  응답.redirect('/list');
+});
+
+
+
