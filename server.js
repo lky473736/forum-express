@@ -18,3 +18,7 @@ new MongoClient(url).connect().then((client)=>{
 }).catch((err)=>{
   console.log(err); // 에러가 발생한다면 에러를 출력
 });
+
+// 메소드 오버라이드를 위한 세팅 (form태그에 put, delete하기 위해)
+const methodOverride = require('method-override')
+app.use(methodOverride('_method')) 
