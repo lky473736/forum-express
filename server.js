@@ -23,12 +23,12 @@ new MongoClient(url).connect().then((client)=>{
 });
 
 // 메소드 오버라이드를 위한 세팅 (form태그에 put, delete하기 위해)
-const methodOverride = require('method-override')
-app.use(methodOverride('_method')) 
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
 
 // 요청.body를 사용하기 위한 세팅
-app.use(express.json())
-app.use(express.urlencoded({extended:true})) 
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
 // ObjectId를 사용하기 위한 세팅
 const ObjectId = require('mongodb').ObjectId;
