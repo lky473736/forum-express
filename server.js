@@ -118,3 +118,27 @@ app.put('/edit', async(요청, 응답) => {
     응답.status(500).send('server error occurred');
   }
 });
+
+// /delete : 글 삭제
+app.delete('/delete', async(요청, 응답) => {
+  let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
+
+  console.log(posting)
+
+  if (posting != null) {
+    const confirmDelete = true;
+
+    if (confirmDelete == true) {
+      await db.collection('post').deleteOne({_id : new ObjectId(요청.query.id)});
+      응답.send("<script>alert('삭제되었습니다.');</script>");
+    }
+
+    else {
+      응답.redirect('/detail/' + 요청.query.id);
+    }
+  }
+
+  else {
+    응답.send("<script>alert('해당하는 게시물이 없습니다.'); window.location.replace('/list');</script>");
+  }
+});
