@@ -4,6 +4,9 @@ const app = express();
 // template engine인 ejs 세팅
 app.set('view engine', 'ejs');
 
+// /public 등록
+app.use('/public', express.static('public'));
+
 // server랑 db의 통신 세팅
 const { MongoClient } = require('mongodb');
 
