@@ -39,16 +39,18 @@ const ObjectId = require('mongodb').ObjectId;
 // 아래는 라우팅 구현
 
 app.get('/', (요청, 응답) => {
-  응답.redirect('/list');
+  응답.redirect('/list/1');
 });
 
 
-// /list 페이지 : 글 목록을 보여준다.
-app.get('/list', async (요청, 응답) => {
-  let postlist = await db.collection('post').find().toArray();
-  console.log(postlist);
+// /list 페이지 : 글 목록을 보여준다. (page 파라미터에 따라 게시물을 5개씩 보여줌)
+app.get('/list/:page', async (요청, 응답) => {
+  // 현재 페이지에 해당되는 5개 이하의 게시물을 postlist에 저장
+  let postlist = await db.collection('post').find().skip((요청.params.page-1) * 5).limit(5).toArray();
+  let allPostlist = await db.collection('post').find().toArray();
+  console.log(postlist, Number(allPostlist.length));
 
-  응답.render('list.ejs', {글목록 : postlist});
+  응답.render('list.ejs', {글목록 : postlist, 페이지 : 요청.params.page, 글수 : allPostlist.length});
 });
 
 

@@ -23,6 +23,22 @@
             </div>
         <%}%>
     </div>
+
+    <!--페이지네이션 페이지바-->
+    <div style="display:flex; justify-content:center; align-items:center;">
+        <nav aria-label="pagination navigator">
+            <ul class="pagination">
+            <% if (Number(페이지) !== 1) { %>
+                <li class="page-item"><a class="page-link" href="/list/<%= Number(페이지)-1 %>">Previous</a></li>
+            <% } %>
+            <li class="page-item"><a class="page-link"><%= 페이지 %></a></li>
+            <% if (페이지*5 < 글수) { %>
+                <li class="page-item" id="nextpage"><a class="page-link" href="/list/<%= Number(페이지)+1 %>">Next</a></li>
+            <% } %>
+            </ul>
+        </nav>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
