@@ -27,9 +27,14 @@
         <script>
             // btn이라는 클래스 안에 btn-outline-danger라는 클래스를 가진 요소들 중 첫번째 요소가 만약 클릭이 되었을 경우 함수에 있는걸 실행해라
             document.querySelectorAll('#delete')[0].addEventListener('click', () => {
-                fetch('/delete?id=' + '<%= 글._id %>', {
-                    method : 'DELETE'
-                })
+                // 사용자에게 삭제여부 되묻기
+                let confirmDelete = window.confirm("게시물을 삭제하시겠습니까?");
+
+                if (confirmDelete === true) {
+                    fetch('/delete?id=' + '<%= 글._id %>', {
+                        method : 'DELETE'
+                    });
+                }
             });
         </script>
     </div> 

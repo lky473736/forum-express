@@ -129,16 +129,7 @@ app.delete('/delete', async(요청, 응답) => {
   console.log(posting)
 
   if (posting != null) {
-    const confirmDelete = true;
-
-    if (confirmDelete == true) {
-      await db.collection('post').deleteOne({_id : new ObjectId(요청.query.id)});
-      응답.send("<script>alert('삭제되었습니다.');</script>");
-    }
-
-    else {
-      응답.redirect('/detail/' + 요청.query.id);
-    }
+    await db.collection('post').deleteOne({_id : new ObjectId(요청.query.id)});
   }
 
   else {
