@@ -45,7 +45,9 @@ app.use(passport.initialize());
 app.use(session({
   secret: '암호화에 쓸 비번',
   resave : false,
-  saveUninitialized : false
+  saveUninitialized : false,
+  // session 기간 변경 : 2주 (기본값) -> 1시간
+  cookie : {maxAge : 60 * 60 * 1000}
 }));
 app.use(passport.session());
 
@@ -200,6 +202,24 @@ passport.use(new LocalStrategy(async (입력아이디, 입력비밀번호, cb) =
   }
 }));
 
+// login 완료 후 session 발행
+// 요청.logIn 사용할 때 자동 실행된다
+// done 안에 두번째 인자 : session document, 쿠키에 담아서 유저에게 보내줌
+passport.serializeUser((user, done) => {
+  process.nextTick(() => {
+    done(null, { id: user._id, username: user.username });
+  });
+});
+
+// deserializeUser : 유저가 보낸 쿠키 분석 & session과 비교
+passport.deserializeUser(async (user, done) => {
+  let result = await db.collection('user').findOne({_id : new ObjectId(user.id) })
+  delete result.password
+  process.nextTick(() => {
+    return done(null, result)
+  });
+});
+
 // /login : 로그인 페이지
 app.get ('/login', (요청, 응답) => {
   응답.render("login.ejs");
@@ -237,6 +257,5 @@ app.post ('/login', async(요청, 응답, next)=> {
 
       alert("성공적으로 로그인되었습니다.").then(응답.redirect("/"));
     });
-    
   })(요청, 응답, next);
 });
