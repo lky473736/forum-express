@@ -155,11 +155,11 @@ app.delete('/delete', async(요청, 응답) => {
 });
 
 // /auth : 회원가입
-app.get ('/auth', async(요청, 응답) => {
-  응답.render ("auth.ejs");
+app.get ('/register', async(요청, 응답) => {
+  응답.render ("register.ejs");
 });
 
-app.post ('/adduser', async(요청, 응답) => {
+app.post ('/register', async(요청, 응답) => {
   if (요청.body.username == '' || 요청.body.password == '') {
     응답.send("<script>alert('아이디나 비밀번호가 작성되지 않았습니다. 다시 작성해주십시오.'); window.location.replace('/auth');</script>");
   }
