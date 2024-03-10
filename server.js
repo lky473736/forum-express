@@ -36,6 +36,20 @@ app.use(express.urlencoded({extended:true}));
 // ObjectId를 사용하기 위한 세팅
 const ObjectId = require('mongodb').ObjectId;
 
+// session, passport을 사용하기 위한 세팅
+const session = require('express-session')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+
+app.use(passport.initialize())
+app.use(session({
+  secret: '암호화에 쓸 비번',
+  resave : false,
+  saveUninitialized : false
+}))
+
+app.use(passport.session()) 
+
 // 아래는 라우팅 구현
 
 app.get('/', (요청, 응답) => {
