@@ -158,15 +158,15 @@ app.get ('/auth', async(요청, 응답) => {
 });
 
 app.post ('/adduser', async(요청, 응답) => {
-  if (요청.body.id == '' || 요청.body.pw == '') {
+  if (요청.body.username == '' || 요청.body.password == '') {
     응답.send("<script>alert('아이디나 비밀번호가 작성되지 않았습니다. 다시 작성해주십시오.'); window.location.replace('/auth');</script>");
   }
 
   else {
     try {
       await db.collection('user').insertOne({
-        id : 요청.body.id, // 아이디 넣기
-        pw : 요청.body.pw, // 비밀번호 넣기
+        username : 요청.body.username, // 아이디 넣기
+        password : 요청.body.password, // 비밀번호 넣기
         name : 요청.body.name // 이름 넣기
       });
 
@@ -176,4 +176,28 @@ app.post ('/adduser', async(요청, 응답) => {
       return 응답.status(500).send('server error occurred');
     }
   }
-})
+});
+
+// /login : 로그인 페이지
+
+app.get ('/login', (요청, 응답) => {
+  응답.render("login.ejs");
+});
+
+app.post ('/login', async(요청, 응답)=> {
+  // 제출한 아이디와 비번 쌍이 DB에 있는 건지 확인
+  // -> session 생성
+  const user = await db.collection('user').findOne({
+    username : 요청.body.username,
+    password : 요청.body.password
+  });
+
+  if (user == null) {
+    console.log("이런 회원 없음");
+  }
+
+  else {
+    console.log("회원가입 성공");
+  }
+  
+});

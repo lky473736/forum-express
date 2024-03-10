@@ -1,0 +1,27 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/main.css">
+    <title>회원가입 페이지</title>
+</head>
+<body class="grey-bg">
+
+    <%- include ('nav.ejs') %>
+
+    <form action="/login" method="POST" class="form-box"> 
+        <h3>로그인</h3>
+        <label for="inputid">아이디 입력</label>
+        <input id="inputid" name="username" placeholder="아이디를 입력하세요.">
+        <p id="nofitid"style="color:red; display:none">아이디를 입력하지 않았거나 아이디 형식에 맞지 않습니다.</p>
+
+        <br>
+
+        <label for="inputpw">비밀번호 입력</label>
+        <input type="password" id="inputpw" name="password" placeholder="비밀번호를 입력하세요.">
+        <p id="nofitpw" style="color:red; display:none">비밀번호를 입력하지 않았거나 비밀번호의 형식에 맞지 않습니다.</p>
+
+        <button type="submit">로그인</button>
+    </form>
+</body>
+</html>
