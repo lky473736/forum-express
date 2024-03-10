@@ -51,12 +51,14 @@ app.use(session({
 }));
 app.use(passport.session());
 
+// bcrypt 해싱 알고리즘을 사용하기 위한 세팅
+const bcrypt = require('bcrypt');
+
 // 아래는 라우팅 구현
 
 app.get('/', (요청, 응답) => {
   응답.redirect('/list/1');
 });
-
 
 // /list 페이지 : 글 목록을 보여준다. (page 파라미터에 따라 게시물을 5개씩 보여줌)
 app.get('/list/:page', async (요청, 응답) => {
