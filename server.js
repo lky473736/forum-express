@@ -255,7 +255,13 @@ app.post ('/login', async(요청, 응답, next)=> {
         return next(err);
       }
 
-      alert("성공적으로 로그인되었습니다.").then(응답.redirect("/"));
+      응답.redirect("/");
     });
   })(요청, 응답, next);
 });
+
+// /mypage : 마이페이지
+app.get ("/mypage", async(요청, 응답) => {
+  console.log(요청.user);
+  응답.render("mypage.ejs", {유저정보 : 요청.user});
+})
