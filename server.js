@@ -41,18 +41,26 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
+// mongoDB에 session 저장하기 위한 세팅
+const MongoStore = require('connect-mongo');
+
 app.use(passport.initialize());
 app.use(session({
   secret: '암호화에 쓸 비번',
   resave : false,
   saveUninitialized : false,
   // session 기간 변경 : 2주 (기본값) -> 1시간
-  cookie : {maxAge : 60 * 60 * 1000}
+  cookie : {maxAge : 60 * 60 * 1000},
+  store : MongoStore({
+    mongoUrl : url,
+    dbName : 'forum'
+  })
 }));
 app.use(passport.session());
 
 // bcrypt 해싱 알고리즘을 사용하기 위한 세팅
 const bcrypt = require('bcrypt');
+
 
 // 아래는 라우팅 구현
 
