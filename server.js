@@ -178,26 +178,65 @@ app.post ('/adduser', async(요청, 응답) => {
   }
 });
 
-// /login : 로그인 페이지
+// /login 페이지에 사용할 DB 탐색 함수 (passport)
+// 사용 방식 : passport.authenticate('local')(~~~~~~~~)
+passport.use(new LocalStrategy(async (입력아이디, 입력비밀번호, cb) => {
+  try {
+    let result = await db.collection('user').findOne({ username : 입력아이디});
 
+    if (!result) {
+      return cb(null, false, { message: 'DB에 account가 없음' });
+    }
+
+    if (result.password == 입력비밀번호) {
+      return cb(null, result)
+    } 
+    
+    else {
+      return cb(null, false, { message: '비밀번호 불일치' });
+  }
+  } catch (err) {
+    return 응답.status(500).send('DB error occurred');
+  }
+}));
+
+// /login : 로그인 페이지
 app.get ('/login', (요청, 응답) => {
   응답.render("login.ejs");
 });
 
-app.post ('/login', async(요청, 응답)=> {
+app.post ('/login', async(요청, 응답, next)=> {
   // 제출한 아이디와 비번 쌍이 DB에 있는 건지 확인
   // -> session 생성
-  const user = await db.collection('user').findOne({
-    username : 요청.body.username,
-    password : 요청.body.password
-  });
 
-  if (user == null) {
-    console.log("이런 회원 없음");
-  }
+  // 아래 과정은 base. passport 문법으로 구현
+  // const user = await db.collection('user').findOne({
+  //   username : 요청.body.username,
+  //   password : 요청.body.password
+  // });
+  // if (user == null) {
+  //   console.log("이런 회원 없음");
+  // }
+  // else {
+  //   console.log("회원가입 성공");
+  // }
 
-  else {
-    console.log("회원가입 성공");
-  }
-  
+  passport.authenticate('local', {sessions: false}, (error, user, info) => {
+    if (error) { // 서버 에러남
+      return 응답.status(500).send ("server error occured");
+    }
+
+    if (!user) { // 유저가 없음 or 비밀번호 불일치
+      return 응답.status(401).json (info.message);
+    }
+
+    요청.logIn(user, (err) => { // logIn함수가 session을 만들어 준다
+      if (err) { // 에러나면
+        return next(err);
+      }
+
+      alert("성공적으로 로그인되었습니다.").then(응답.redirect("/"));
+    });
+    
+  })(요청, 응답, next);
 });
