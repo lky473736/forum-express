@@ -168,9 +168,12 @@ app.post ('/register', async(요청, 응답) => {
 
   else {
     try {
+      // 비밀번호를 hashing해서 저장하기
+      let hashingPassword = await bcrypt.hash(요청.body.password, 10);
+
       await db.collection('user').insertOne({
         username : 요청.body.username, // 아이디 넣기
-        password : 요청.body.password, // 비밀번호 넣기
+        password : hashingPassword, // 비밀번호 넣기 (해싱된)
         name : 요청.body.name // 이름 넣기
       });
 
@@ -192,7 +195,10 @@ passport.use(new LocalStrategy(async (입력아이디, 입력비밀번호, cb) =
       return cb(null, false, { message: 'DB에 account가 없음' });
     }
 
-    if (result.password == 입력비밀번호) {
+    // 해싱된 비밀번호와 입력한 비밀번호를 비교
+    let isPassword = await bcrypt.compare(입력비밀번호, result.password);
+
+    if (isPassword) {
       return cb(null, result)
     } 
     
@@ -266,4 +272,4 @@ app.post ('/login', async(요청, 응답, next)=> {
 app.get ("/mypage", async(요청, 응답) => {
   console.log(요청.user);
   응답.render("mypage.ejs", {유저정보 : 요청.user});
-})
+});
