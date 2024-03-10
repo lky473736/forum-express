@@ -37,18 +37,17 @@ app.use(express.urlencoded({extended:true}));
 const ObjectId = require('mongodb').ObjectId;
 
 // session, passport을 사용하기 위한 세팅
-const session = require('express-session')
-const passport = require('passport')
-const LocalStrategy = require('passport-local')
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
-app.use(passport.initialize())
+app.use(passport.initialize());
 app.use(session({
   secret: '암호화에 쓸 비번',
   resave : false,
   saveUninitialized : false
-}))
-
-app.use(passport.session()) 
+}));
+app.use(passport.session());
 
 // 아래는 라우팅 구현
 
@@ -152,3 +151,29 @@ app.delete('/delete', async(요청, 응답) => {
     응답.send("<script>alert('해당하는 게시물이 없습니다.'); window.location.replace('/list');</script>");
   }
 });
+
+// /auth : 회원가입
+app.get ('/auth', async(요청, 응답) => {
+  응답.render ("auth.ejs");
+});
+
+app.post ('/adduser', async(요청, 응답) => {
+  if (요청.body.id == '' || 요청.body.pw == '') {
+    응답.send("<script>alert('아이디나 비밀번호가 작성되지 않았습니다. 다시 작성해주십시오.'); window.location.replace('/auth');</script>");
+  }
+
+  else {
+    try {
+      await db.collection('user').insertOne({
+        id : 요청.body.id, // 아이디 넣기
+        pw : 요청.body.pw, // 비밀번호 넣기
+        name : 요청.body.name // 이름 넣기
+      });
+
+      응답.redirect ('/');
+    } catch (err) {
+      console.log(err);
+      return 응답.status(500).send('server error occurred');
+    }
+  }
+})

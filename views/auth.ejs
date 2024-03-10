@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/main.css">
+    <title>회원가입 페이지</title>
+</head>
+<body class="grey-bg">
+
+    <%- include ('nav.ejs') %>
+    
+    <!--회원가입할 때 적을 정보들
+        1) 이름
+        2) 아이디 (5자 이상)
+        3) 비밀번호 (7자 이상, 숫자와 영어가 섞여있어야 함)
+        4) 비밀번호 재입력
+    -->
+
+    <form action="/adduser" method="POST" class="form-box"> 
+        <!--전송 버튼을 누르면 post의 형태로 /add에 데이터가 전송됨-->
+        <h3>회원가입</h3>
+        <label for="inputid">* 아이디 입력 (5자 이상)</label>
+        <input id="inputid" name="id" placeholder="아이디를 입력하세요.">
+        <p id="nofitid"style="color:red; display:none">아이디를 입력하지 않았거나 아이디 형식에 맞지 않습니다.</p>
+
+        <br>
+
+        <label for="inputpw">* 비밀번호 입력 (7자 이상, 영어/숫자 혼용)</label>
+        <input type="password" id="inputpw" name="pw" placeholder="비밀번호를 입력하세요.">
+        <p id="nofitpw" style="color:red; display:none">비밀번호를 입력하지 않았거나 비밀번호의 형식에 맞지 않습니다.</p>
+
+        <br>
+
+        <label for="reinputpw">* 비밀번호 확인</label>
+        <input type="password" id="inputpw" name="repw" placeholder="비밀번호를 입력하세요.">
+        <p id="nofitrepw" style="color:red; display:none">비밀번호가 일치하지 않습니다.</p>
+
+        <br>
+        
+        <label for="name">이름</label>
+        <input type="text" id="name" name="name" placeholder="이름을 입력하세요.">
+
+        <button type="submit" id="auth">회원가입</button>
+    </form>
+</body>
+</html>
