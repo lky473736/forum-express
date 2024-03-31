@@ -7,9 +7,9 @@
 </head>
 <body class="grey-bg">
 
-    <%- include ('nav.ejs') %>
+    <%- include('nav.ejs', {isLogin: 로그인상태}) %>
 
-    <form action="/add" method="POST" class="form-box"> 
+    <form action="/write" method="POST" class="form-box"> 
         <!--전송 버튼을 누르면 post의 형태로 /add에 데이터가 전송됨-->
         <h4>글 작성</h4>
         <input id="writetitle" name="title" placeholder="제목을 입력하세요.">

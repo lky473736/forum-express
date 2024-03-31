@@ -61,9 +61,11 @@ app.use(passport.session());
 // bcrypt 해싱 알고리즘을 사용하기 위한 세팅
 const bcrypt = require('bcrypt');
 
-//////////////////////////////////////////////////// 아래는 라우팅 구현
+//////////////////////////////////////////////////// 
+// 아래는 라우팅 구현
 
 app.get('/', (요청, 응답) => {
+  console.log(요청.user)
   응답.redirect('/list/1');
 });
 
@@ -108,15 +110,15 @@ passport.use(new LocalStrategy(async (입력아이디, 입력비밀번호, cb) =
 
     // 해싱된 비밀번호와 입력한 비밀번호를 비교
     let isPassword = await bcrypt.compare(입력비밀번호, result.password);
+    console.log(isPassword);
 
     if (isPassword) {
-      return cb(null, result)
+      return cb(null, result);
     } 
     
     else {
       return cb(null, false, { message: '비밀번호 불일치' });
-  }
-  } catch (err) {
+  } } catch (err) {
     return 응답.status(500).send('DB error occurred');
   }
 }));
@@ -132,12 +134,12 @@ passport.serializeUser((user, done) => {
 
 // deserializeUser : 유저가 보낸 쿠키 분석 & session과 비교 (요청.user == 유저의 정보)
 // 회원가입과 로그인 페이지 API를 맨 위로 보내기
-passport.deserializeUser(async (user, done) => {
-  let result = await db.collection('user').findOne({_id : new ObjectId(user.id) })
+passport.deserializeUser(async(user, done) => {
+  let result = await db.collection('user').findOne({_id : new ObjectId(user.id)})
   delete result.password
   process.nextTick(() => {
     return done(null, result)
-  });
+  })
 });
 
 // /login : 로그인 페이지
@@ -183,7 +185,7 @@ app.post ('/login', async(요청, 응답, next)=> {
 // /mypage : 마이페이지
 app.get ("/mypage", async(요청, 응답) => {
   console.log(요청.user);
-  응답.render("mypage.ejs", {유저정보 : 요청.user});
+  응답.render("mypage.ejs", {로그인상태 : 요청.user});
 });
 
 // /list 페이지 : 글 목록을 보여준다. (page 파라미터에 따라 게시물을 5개씩 보여줌)
@@ -193,16 +195,21 @@ app.get('/list/:page', async (요청, 응답) => {
   let allPostlist = await db.collection('post').find().toArray();
   console.log(postlist, Number(allPostlist.length));
 
-  응답.render('list.ejs', {글목록 : postlist, 페이지 : 요청.params.page, 글수 : allPostlist.length});
+  응답.render('list.ejs', {글목록 : postlist, 페이지 : 요청.params.page, 글수 : allPostlist.length, 로그인상태 : 요청.user});
 });
 
 
 // /write 페이지 : 글 작성
 app.get('/write', async(요청, 응답) => {
-  응답.render('write.ejs');
+  if (요청.user != undefined) {
+    응답.render('write.ejs');
+  } 
+  else {
+    응답.send("<script>alert('로그인 기록이 없습니다. 로그인하십시오.'); window.location.replace('/login');</script>")
+  }
 });
 
-app.post('/add', async(요청, 응답) => {
+app.post('/write', async(요청, 응답) => {
   console.log(요청.body)
 
   if (요청.body.title == '' || 요청.body.content == '') {
@@ -211,11 +218,15 @@ app.post('/add', async(요청, 응답) => {
 
   else {
     try {
+      let today = new Date();
+      
       await db.collection('post').insertOne({
         title : 요청.body.title, // 제목 넣기
-        content : 요청.body.content // 내용 넣기
+        content : 요청.body.content, // 내용 넣기
+        name : 요청.user.name, // 유저의 이름 넣기
+        date : today.toLocaleDateString() // 작성한 날짜 넣기
       });
-      응답.redirect ('/list');
+      응답.redirect ('/list/1');
     } catch (err) {
       console.log(err);
       return 응답.status(500).send('server error occurred');
@@ -231,7 +242,7 @@ app.get('/detail', async(요청, 응답) => {
     console.log(요청.query.id); 
 
     if (posting != null) { 
-      응답.render('detail.ejs', {글 : posting});
+      응답.render('detail.ejs', {글 : posting, 로그인상태 : 요청.user});
     }
 
     else { 
@@ -247,9 +258,20 @@ app.get('/detail', async(요청, 응답) => {
 // /edit : 글 수정 페이지 
 app.get('/edit', async(요청, 응답) => {
   let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
-  console.log(요청.query.id); 
-  
-  응답.render('edit.ejs', {글 : posting});
+    console.log(요청.query.id); 
+
+  if (응답.user !== undefined && 응답.user.name === posting.name) {
+    응답.render('edit.ejs', {글 : posting});
+  }
+  else {
+    if (응답.user !== undefined) {
+      응답.send("<script>alert('로그인이 필요합니다.'); window.location.replace('/login');</script>");
+    }
+
+    if (응답.user.name !== posting.name) {
+      응답.send("<script>alert('다른 사용자의 글을 수정할 수 없습니다.'); window.location.replace('/list/1');</script>");
+    }
+  }
 });
 
 app.put('/edit', async(요청, 응답) => {
@@ -271,13 +293,23 @@ app.put('/edit', async(요청, 응답) => {
 app.delete('/delete', async(요청, 응답) => {
   let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
 
-  console.log(posting)
-
   if (posting != null) {
-    await db.collection('post').deleteOne({_id : new ObjectId(요청.query.id)});
+    if (응답.user !== undefined && 응답.user.name === posting.name) {
+      await db.collection('post').deleteOne({_id : new ObjectId(요청.query.id)});
+    }
+
+    else {
+      if (응답.user !== undefined) {
+        응답.send("<script>alert('로그인이 필요합니다.'); window.location.replace('/login');</script>");
+      }
+  
+      if (응답.user.name !== posting.name) {
+        응답.send("<script>alert('다른 사용자의 글을 삭제할 수 없습니다.'); window.location.replace('/list/1');</script>");
+      }
+    }
   }
 
   else {
-    응답.send("<script>alert('해당하는 게시물이 없습니다.'); window.location.replace('/list');</script>");
+    응답.send("<script>alert('해당하는 게시물이 없습니다.'); window.location.replace('/list/1');</script>");
   }
 });

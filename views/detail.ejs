@@ -7,18 +7,21 @@
     <title>글 읽기 페이지</title>
 </head>
 <body class="grey-bg">
-    <%- include ('nav.ejs') %>
+    <%- include('nav.ejs', {isLogin: 로그인상태}) %>
 
     <div class="detail-bg">
         <h4><%= 글.title %></h4>
         <hr>
         <p><%= 글.content %></p>
         <br>
+
+        <% if (로그인상태.name === 글.name && 로그인상태 !== undefined) { %>
         <a href="/edit?id=<%= 글._id %>"><button type="button" class="btn btn-outline-primary" id="edit">수정하기</button></a>
 
         <!--삭제 기능을 원래는 a태그로 구현하려고 했으나 a태그는 새로고침이 되니깐 새로고침 안되게끔 ajax를 사용하려고 함. ajax 사용하려면 script-->
         <button type="button" class="btn btn-outline-danger" id="delete">삭제하기</button>
-        
+        <% } %>
+
         <!--부트스트랩-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
         </script>

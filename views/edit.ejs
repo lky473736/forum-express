@@ -6,7 +6,7 @@
     <title>글 수정 페이지</title>
 </head>
 <body class="grey-bg">
-    <%- include ('nav.ejs') %>
+    <%- include('nav.ejs', {isLogin: 로그인상태}) %>
 
     <!--메소드 오버라이딩을 통해 post요청을 put으로 바꿈-->
     <form action="/edit?_method=PUT" method="POST" class="form-box"> 
