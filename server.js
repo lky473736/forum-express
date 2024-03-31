@@ -51,7 +51,7 @@ app.use(session({
   saveUninitialized : false,
   // session 기간 변경 : 2주 (기본값) -> 1시간
   cookie : {maxAge : 60 * 60 * 1000},
-  store : MongoStore({
+  store: MongoStore.create({
     mongoUrl : url,
     dbName : 'forum'
   })
@@ -60,7 +60,6 @@ app.use(passport.session());
 
 // bcrypt 해싱 알고리즘을 사용하기 위한 세팅
 const bcrypt = require('bcrypt');
-
 
 // 아래는 라우팅 구현
 
@@ -164,7 +163,7 @@ app.delete('/delete', async(요청, 응답) => {
   }
 });
 
-// /auth : 회원가입
+// /register : 회원가입
 app.get ('/register', async(요청, 응답) => {
   응답.render ("register.ejs");
 });
@@ -227,7 +226,7 @@ passport.serializeUser((user, done) => {
   });
 });
 
-// deserializeUser : 유저가 보낸 쿠키 분석 & session과 비교
+// deserializeUser : 유저가 보낸 쿠키 분석 & session과 비교 (요청.user)
 passport.deserializeUser(async (user, done) => {
   let result = await db.collection('user').findOne({_id : new ObjectId(user.id) })
   delete result.password
