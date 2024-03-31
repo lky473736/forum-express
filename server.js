@@ -71,7 +71,7 @@ app.get('/', (요청, 응답) => {
 
 // /register : 회원가입
 app.get ('/register', async(요청, 응답) => {
-  응답.render ("register.ejs");
+  응답.render ("register.ejs", {로그인상태 : 요청.user});
 });
 
 app.post ('/register', async(요청, 응답) => {
@@ -144,7 +144,7 @@ passport.deserializeUser(async(user, done) => {
 
 // /login : 로그인 페이지
 app.get ('/login', (요청, 응답) => {
-  응답.render("login.ejs");
+  응답.render("login.ejs", {로그인상태 : 요청.user});
 });
 
 app.post ('/login', async(요청, 응답, next)=> {
@@ -182,6 +182,15 @@ app.post ('/login', async(요청, 응답, next)=> {
   })(요청, 응답, next);
 });
 
+
+// /logout : 로그아웃 페이지
+app.get ("/logout", async(요청, 응답) => {
+  요청.logout(function(err) {
+    // if (err) { return next(err); }
+    응답.redirect('/list/1');
+  });
+});
+
 // /mypage : 마이페이지
 app.get ("/mypage", async(요청, 응답) => {
   console.log(요청.user);
@@ -202,7 +211,7 @@ app.get('/list/:page', async (요청, 응답) => {
 // /write 페이지 : 글 작성
 app.get('/write', async(요청, 응답) => {
   if (요청.user != undefined) {
-    응답.render('write.ejs');
+    응답.render('write.ejs', {로그인상태 : 요청.user});
   } 
   else {
     응답.send("<script>alert('로그인 기록이 없습니다. 로그인하십시오.'); window.location.replace('/login');</script>")
@@ -261,7 +270,7 @@ app.get('/edit', async(요청, 응답) => {
     console.log(요청.query.id); 
 
   if (응답.user !== undefined && 응답.user.name === posting.name) {
-    응답.render('edit.ejs', {글 : posting});
+    응답.render('edit.ejs', {글 : posting, 로그인상태 : 요청.user});
   }
   else {
     if (응답.user !== undefined) {

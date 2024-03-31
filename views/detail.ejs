@@ -15,7 +15,7 @@
         <p><%= 글.content %></p>
         <br>
 
-        <% if (로그인상태.name === 글.name && 로그인상태 !== undefined) { %>
+        <% if (로그인상태 !== undefined && 로그인상태.name === 글.name) { %>
         <a href="/edit?id=<%= 글._id %>"><button type="button" class="btn btn-outline-primary" id="edit">수정하기</button></a>
 
         <!--삭제 기능을 원래는 a태그로 구현하려고 했으나 a태그는 새로고침이 되니깐 새로고침 안되게끔 ajax를 사용하려고 함. ajax 사용하려면 script-->
