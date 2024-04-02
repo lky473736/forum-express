@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+// .env 파일 사용 세팅
+require('dotenv').config() 
+
 // template engine인 ejs 세팅
 app.set('view engine', 'ejs');
 
