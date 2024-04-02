@@ -14,14 +14,13 @@ app.use('/public', express.static('public'));
 const { MongoClient } = require('mongodb');
 
 let db;
-const url = 'mongodb+srv://admin:admin@forum-express.ukasdrz.mongodb.net/?retryWrites=true&w=majority&appName=forum-express';
+const url = process.env.DB_URL;
 
 new MongoClient(url).connect().then((client)=>{ 
   console.log('MongoDB 연결 성공');
   db = client.db('forum'); // forum DB에 접속
 
-  // 서버 port 오픈 (8080)
-  app.listen(8080, () => {
+  app.listen(process.env.PORT, () => {
     console.log("http://localhost:8080 에서 서버가 실행 중입니다.");
   });
 }).catch((err)=>{
@@ -63,6 +62,22 @@ app.use(passport.session());
 
 // bcrypt 해싱 알고리즘을 사용하기 위한 세팅
 const bcrypt = require('bcrypt');
+
+////////////////////////////////////////////////////
+// 미들웨어 함수 및 등록
+function checkLogin(요청, 응답, next) {
+  if (요청.user === undefined) {
+    응답.send("<script>alert('로그인이 필요합니다.'); window.location.replace('/login');</script>");
+  }
+  else {
+    next();
+  }
+}
+
+app.use("/logout", checkLogin);
+app.use("/mypage", checkLogin);
+app.use("/edit", checkLogin);
+app.use("/delete", checkLogin);
 
 //////////////////////////////////////////////////// 
 // 아래는 라우팅 구현
@@ -213,12 +228,7 @@ app.get('/list/:page', async (요청, 응답) => {
 
 // /write 페이지 : 글 작성
 app.get('/write', async(요청, 응답) => {
-  if (요청.user != undefined) {
     응답.render('write.ejs', {로그인상태 : 요청.user});
-  } 
-  else {
-    응답.send("<script>alert('로그인 기록이 없습니다. 로그인하십시오.'); window.location.replace('/login');</script>")
-  }
 });
 
 app.post('/write', async(요청, 응답) => {
@@ -272,17 +282,11 @@ app.get('/edit', async(요청, 응답) => {
   let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
     console.log(요청.query.id); 
 
-  if (응답.user !== undefined && 응답.user.name === posting.name) {
+  if (응답.user.name === posting.name) {
     응답.render('edit.ejs', {글 : posting, 로그인상태 : 요청.user});
   }
   else {
-    if (응답.user !== undefined) {
-      응답.send("<script>alert('로그인이 필요합니다.'); window.location.replace('/login');</script>");
-    }
-
-    if (응답.user.name !== posting.name) {
-      응답.send("<script>alert('다른 사용자의 글을 수정할 수 없습니다.'); window.location.replace('/list/1');</script>");
-    }
+    응답.send("<script>alert('다른 사용자의 글을 수정할 수 없습니다.'); window.location.replace('/list/1');</script>");
   }
 });
 
@@ -306,15 +310,11 @@ app.delete('/delete', async(요청, 응답) => {
   let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
 
   if (posting != null) {
-    if (응답.user !== undefined && 응답.user.name === posting.name) {
+    if (응답.user.name === posting.name) {
       await db.collection('post').deleteOne({_id : new ObjectId(요청.query.id)});
     }
 
     else {
-      if (응답.user !== undefined) {
-        응답.send("<script>alert('로그인이 필요합니다.'); window.location.replace('/login');</script>");
-      }
-  
       if (응답.user.name !== posting.name) {
         응답.send("<script>alert('다른 사용자의 글을 삭제할 수 없습니다.'); window.location.replace('/list/1');</script>");
       }
