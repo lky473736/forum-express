@@ -1,7 +1,8 @@
-// /register : 회원가입
 const router = require('express').Router()
 let connectDB = require('./../db.js')
 const { ObjectId } = require('mongodb');
+
+let checkLogin = require('../utils/checkLogin.js');
 
 let db
 connectDB.then((client)=>{

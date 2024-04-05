@@ -1,7 +1,8 @@
-// /register : 회원가입
 const router = require('express').Router()
 let connectDB = require('./../db.js')
 const { ObjectId } = require('mongodb');
+
+let checkLogin = require('../utils/checkLogin.js');
 
 let db
 connectDB.then((client)=>{
@@ -11,11 +12,11 @@ connectDB.then((client)=>{
   console.log(err)
 }) 
 
-router.get('/', async(요청, 응답) => {
+router.get('/', checkLogin, async(요청, 응답) => {
   응답.render('write.ejs', {로그인상태 : 요청.user});
 });
 
-router.post('/', async(요청, 응답) => {
+router.post('/', checkLogin, async(요청, 응답) => {
   console.log(요청.body)
 
   if (요청.body.title == '' || 요청.body.content == '') {

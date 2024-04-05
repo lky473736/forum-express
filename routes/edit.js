@@ -2,6 +2,8 @@ const router = require('express').Router()
 let connectDB = require('./../db.js')
 const { ObjectId } = require('mongodb'); 
 
+let checkLogin = require('../utils/checkLogin.js');
+
 let db
 connectDB.then((client)=>{
   console.log('DB연결성공')
@@ -10,7 +12,7 @@ connectDB.then((client)=>{
   console.log(err)
 }) 
 
-router.get('/', async(요청, 응답) => {
+router.get('/', checkLogin, async(요청, 응답) => {
     let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
       console.log(요청.query.id); 
   
@@ -22,7 +24,7 @@ router.get('/', async(요청, 응답) => {
     }
 });
 
-router.put('/', async(요청, 응답) => {
+router.put('/', checkLogin, async(요청, 응답) => {
     console.log (요청.body);
     try {
       if (요청.body.title == '' || 요청.body.content == '') {

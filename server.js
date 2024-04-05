@@ -98,16 +98,16 @@ app.use('/list', require('./routes/list.js'));
 app.use('/detail', require('./routes/detail.js'));
 
 // /write 페이지 : 글 작성
-app.use('/write', [checkLogin, require('./routes/write.js')]);
+app.use('/write', require('./routes/write.js'));
 
 // /edit : 글 수정 페이지 
-app.use('/edit', [checkLogin, require('./routes/edit.js')]);
+app.use('/edit', require('./routes/edit.js'));
 
 // /delete : 글 삭제
-app.use('/delete', [checkLogin, require('./routes/delete.js')]);
+app.use('/delete', require('./routes/delete.js'));
 
 // /logout : 로그아웃 페이지
-app.use('/logout', [checkLogin, require('./routes/logout.js')]);
+app.use('/logout', require('./routes/logout.js'));
 
 // /mypage : 마이페이지
-app.use('/mypage', [checkLogin, require('./routes/mypage.js')]);
+app.use('/mypage', require('./routes/mypage.js'));

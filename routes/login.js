@@ -2,12 +2,15 @@
 const router = require('express').Router()
 let connectDB = require('./../db.js')
 const { ObjectId } = require('mongodb');
-require('dotenv').config() 
 
+// env 세팅
+require('dotenv').config({ path: "./../.env" });
 
+// db 연결
 let db
 connectDB.then((client)=>{
   console.log('DB연결성공')
+  console.log(process.env.SESSION_TERM)
   db = client.db('forum')
 }).catch((err)=>{
   console.log(err)
@@ -30,12 +33,12 @@ router.use(session({
     resave : false,
     saveUninitialized : false,
     // session 기간 변경 : 2주 (기본값) -> 1시간
-    cookie : {maxAge : Number(process.env.SESSION_TERM)},
+    cookie : {maxAge : process.env.SESSION_TERM},
     store: MongoStore.create({
       mongoUrl : process.env.DB_URL,
       dbName : process.env.DB_NAME
     })
-  }));
+}));
 router.use(passport.session());
 
 // /login 페이지에 사용할 DB 탐색 함수 (passport)
@@ -103,7 +106,7 @@ router.post ('/', async(요청, 응답, next)=> {
     //   console.log("회원가입 성공");
     // }
 
-    passport.authenticate('local', {sessions: true}, (error, user, info) => {
+    passport.authenticate('local', {sessions: false}, (error, user, info) => {
         if (error) { // 서버 에러남
             return 응답.status(500).send ("server error occured");
         }
@@ -113,6 +116,8 @@ router.post ('/', async(요청, 응답, next)=> {
         }
 
         요청.logIn(user, (err) => { // logIn함수가 session을 만들어 준다
+            console.log ("세션발행")
+            console.log (process.env.SESSION_TERM);
             if (err) { // 에러나면
                 return next(err);
             }
