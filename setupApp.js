@@ -4,7 +4,6 @@ const session = require('express-session');
 const passport = require('passport');
 const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
 
 const setupApp = (app) => {
   app.set('view engine', 'ejs');
