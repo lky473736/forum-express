@@ -1,15 +1,15 @@
 const router = require('express').Router()
 let connectDB = require('./../db.js')
 const { ObjectId } = require('mongodb'); 
+let checkLogin = require('../utils/checkLogin.js');
 
 let db
-
 connectDB.then((client)=>{
   console.log('DB연결성공')
   db = client.db('forum')
 
   // /detail 페이지 : 제목과 글, 삭제와 수정 기능 
-  router.get('/', async(요청, 응답) => {
+  router.get('/', checkLogin, async(요청, 응답) => {
     try {
       let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
       console.log(요청.query.id); 

@@ -35,6 +35,9 @@ app.use(express.urlencoded({extended:true}));
 // ObjectId를 사용하기 위한 세팅
 const ObjectId = require('mongodb').ObjectId;
 
+// bcrypt 해싱 알고리즘을 사용하기 위한 세팅
+const bcrypt = require('bcrypt');
+
 // session, passport을 사용하기 위한 세팅
 const session = require('express-session');
 const passport = require('passport');
@@ -45,39 +48,66 @@ const MongoStore = require('connect-mongo');
 
 app.use(passport.initialize());
 app.use(session({
-  secret: '_',
-  resave : false,
-  saveUninitialized : false,
-  // session 기간 변경 : 2주 (기본값) -> 1시간
-  cookie : {maxAge : Number(process.env.SESSION_TERM)},
-  store: MongoStore.create({
-    mongoUrl : process.env.DB_URL,
-    dbName : process.env.DB_NAME
-  })
+    secret: '_',
+    resave : false,
+    saveUninitialized : false,
+    // session 기간 변경 : 2주 (기본값) -> 1시간
+    cookie : {maxAge : process.env.SESSION_TERM},
+    store: MongoStore.create({
+      mongoUrl : process.env.DB_URL,
+      dbName : process.env.DB_NAME
+    })
 }));
 app.use(passport.session());
 
-// bcrypt 해싱 알고리즘을 사용하기 위한 세팅
-const bcrypt = require('bcrypt');
+// /login 페이지에 사용할 DB 탐색 함수 (passport)
+// 사용 방식 : passport.authenticate('local')(~~~~~~~~)
+passport.use(new LocalStrategy(async (입력아이디, 입력비밀번호, cb) => {
+    try {
+        let result = await db.collection('user').findOne({ username : 입력아이디});
+
+        if (!result) {
+        return cb(null, false, { message: 'DB에 account가 없음' });
+        }
+
+        // 해싱된 비밀번호와 입력한 비밀번호를 비교
+        let isPassword = await bcrypt.compare(입력비밀번호, result.password);
+        console.log(isPassword);
+
+        if (isPassword) {
+        return cb(null, result);
+        } 
+        
+        else {
+        return cb(null, false, { message: '비밀번호 불일치' });
+    } } catch (err) {
+        console.log(err);
+    }
+}));
+
+// login 완료 후 session 발행
+// 요청.logIn 사용할 때 자동 실행된다
+// done 안에 두번째 인자 : session document, 쿠키에 담아서 유저에게 보내줌
+passport.serializeUser((user, done) => {
+    process.nextTick(() => {
+        done(null, { id: user._id, username: user.username });
+    });
+});
+
+// deserializeUser : 유저가 보낸 쿠키 분석 & session과 비교 (요청.user == 유저의 정보)
+// 회원가입과 로그인 페이지 API를 맨 위로 보내기
+passport.deserializeUser(async(user, done) => {
+    let result = await db.collection('user').findOne({_id : new ObjectId(user.id)})
+    delete result.password
+    process.nextTick(() => {
+        return done(null, result)
+    })
+});
+
 
 
 ////////////////////////////////////////////////////
-// 미들웨어 함수 및 등록
-function checkLogin(요청, 응답, next) {
-  if (요청.user === undefined) {
-    응답.send("<script>alert('로그인이 필요합니다.'); window.location.replace('/login');</script>");
-  }
-  else {
-    next();
-  }
-}
 
-// app.use("/logout", checkLogin);
-// app.use("/mypage", checkLogin);
-// app.use("/edit", checkLogin);
-// app.use("/delete", checkLogin);
-
-//////////////////////////////////////////////////// 
 // 아래는 라우팅 구현
 
 app.get('/', (요청, 응답) => {

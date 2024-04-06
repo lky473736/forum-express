@@ -2,6 +2,8 @@ const router = require('express').Router()
 let connectDB = require('./../db.js')
 const { ObjectId } = require('mongodb'); 
 
+let checkLogin = require('../utils/checkLogin.js');
+
 let db
 connectDB.then((client)=>{
   console.log('DB연결성공')
@@ -10,17 +12,17 @@ connectDB.then((client)=>{
   console.log(err)
 }) 
 
-router.delete('/', async(요청, 응답) => {
+router.delete('/', checkLogin, async(요청, 응답) => {
     let posting = await db.collection('post').findOne({_id : new ObjectId(요청.query.id)});
   
     if (posting != null) {
-      if (응답.user.name === posting.name) {
+      if (요청.user.name === posting.name) {
         await db.collection('post').deleteOne({_id : new ObjectId(요청.query.id)});
       }
   
       else {
-        if (응답.user.name !== posting.name) {
-          응답.send("<script>alert('다른 사용자의 글을 삭제할 수 없습니다.'); window.location.replace('/list/1');</script>");
+        if (요청.user.name !== posting.name) {
+          응답.send("<script>alert('다른 사용자의 글을 삭제할 수 없습니다.'); history.back()</script>");
         }
       }
     }
