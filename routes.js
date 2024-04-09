@@ -7,6 +7,8 @@ const editRoute = require('./routes/edit');
 const deleteRoute = require('./routes/delete');
 const logoutRoute = require('./routes/logout');
 const mypageRoute = require('./routes/mypage');
+const searchRoute = require('./routes/search');
+// const resultRoute = require('./routes/result');
 
 const routes = (app, db) => {
   app.get('/', (req, res) => {
@@ -23,6 +25,8 @@ const routes = (app, db) => {
   app.use('/delete', deleteRoute);
   app.use('/logout', logoutRoute);
   app.use('/mypage', mypageRoute);
+  app.use('/search', searchRoute);
+  // app.use('/result', resultRoute);
 };
 
 module.exports = routes;

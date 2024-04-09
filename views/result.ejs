@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/public/main.css">
-    <title>게시글 목록</title>
+    <title>검색 결과</title>
 </head>
 <body class="grey-bg">
 
@@ -11,6 +11,14 @@
     <a href="/write"><button type="button" class="btn btn-outline-success" style="display:inline-block; margin: 7px 10px;">게시물 작성</button></a>
 
     <%- include ('search.ejs') %>
+
+    <div class="white-bg">
+        <p style="text-align : center">
+            <mark>
+                "<%= 검색키워드 %>"에 대한 검색 결과는 아래와 같습니다
+            </mark>
+        </p>
+    </div>
 
     <div class="white-bg">
         <%for(let i = 0; i < 글목록.length; i++){%>
@@ -29,11 +37,11 @@
         <nav aria-label="pagination navigator">
             <ul class="pagination">
             <% if (Number(페이지) !== 1) { %>
-                <li class="page-item"><a class="page-link" href="/list/<%= Number(페이지)-1 %>">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="/search/<%= Number(페이지)-1 %>">Previous</a></li>
             <% } %>
             <li class="page-item"><a class="page-link"><%= 페이지 %></a></li>
             <% if (페이지*5 < 글수) { %>
-                <li class="page-item" id="nextpage"><a class="page-link" href="/list/<%= Number(페이지)+1 %>">Next</a></li>
+                <li class="page-item" id="nextpage"><a class="page-link" href="/search/<%= Number(페이지)+1 %>">Next</a></li>
             <% } %>
             </ul>
         </nav>
