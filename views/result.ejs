@@ -15,7 +15,7 @@
     <div class="white-bg">
         <p style="text-align : center">
             <mark>
-                "<%= 검색키워드 %>"에 대한 검색 결과는 아래와 같습니다
+                "<%= 검색키워드 %>"에 대한 검색 결과는 아래와 같습니다.
             </mark>
         </p>
     </div>
@@ -37,11 +37,11 @@
         <nav aria-label="pagination navigator">
             <ul class="pagination">
             <% if (Number(페이지) !== 1) { %>
-                <li class="page-item"><a class="page-link" href="/search/<%= Number(페이지)-1 %>">Previous</a></li>
+                <li class="page-item"><a class="page-link" href="/search/<%= Number(페이지)-1 %>?keyword=<%= 검색키워드 %>">Previous</a></li>
             <% } %>
             <li class="page-item"><a class="page-link"><%= 페이지 %></a></li>
             <% if (페이지*5 < 글수) { %>
-                <li class="page-item" id="nextpage"><a class="page-link" href="/search/<%= Number(페이지)+1 %>">Next</a></li>
+                <li class="page-item" id="nextpage"><a class="page-link" href="/search/<%= Number(페이지)+1 %>?keyword=<%= 검색키워드 %>">Next</a></li>
             <% } %>
             </ul>
         </nav>
