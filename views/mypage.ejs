@@ -12,5 +12,39 @@
         <h4><%= 로그인상태.name %></h4>
         <hr>
         <p><%= 로그인상태.username %></p>
+    </div>
+
+    <div class="white-bg">
+        <p style="text-align : center">
+            "<span style="background-color: yellow;"><%= 로그인상태.username %></span>"님이 작성한 글은 아래와 같습니다.
+        </p>
+    </div>
+
+    <div class="white-bg">
+        <%for(let i = 0; i < 작성글.length; i++){%>
+            <div class="list-box"> 
+                <a href="/detail?id=<%= 작성글[i]._id %>"><h4><%= 작성글[i].title %></h4></a>
+                <p>
+                    <%= 작성글[i].content.substr(0, 30); %>
+                    ...
+                </p>
+            </div>
+        <%}%>
+    </div>
+
+    <!--페이지네이션 페이지바-->
+    <div style="display:flex; justify-content:center; align-items:center;">
+        <nav aria-label="pagination navigator">
+            <ul class="pagination">
+            <% if (Number(페이지) !== 1) { %>
+                <li class="page-item"><a class="page-link" href="/mypage/<%= Number(페이지)-1 %>">Previous</a></li>
+            <% } %>
+            <li class="page-item"><a class="page-link"><%= 페이지 %></a></li>
+            <% if (페이지*5 < 글수) { %>
+                <li class="page-item" id="nextpage"><a class="page-link" href="/mypage/<%= Number(페이지)+1 %>">Next</a></li>
+            <% } %>
+            </ul>
+        </nav>
+    </div>
 </body>
 </html>
